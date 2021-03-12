@@ -12,7 +12,6 @@ public class PlayerController : GameManager
     public Camera mainCam; //Our camera
     public movementState curMove = movementState.walk; //A state controller to determine movement speeds and other variables
     public int playerLevel, playerEXP;
-    string jump, crouch, shoot, run;
     private void Start()
     {
         Cursor.visible = false; //Hides cursor
