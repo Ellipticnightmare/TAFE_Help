@@ -25,7 +25,7 @@ public class Settings : GameManager
             {
                 if (item.keyBindName == item2.name) //If button matches keybinding entry, update text
                 {
-                    item2.GetComponentInChildren<Text>().text = item2.name + ": " + item.keybindData;
+                    item2.GetComponentInChildren<Text>().text = item2.name + ": " + keyName(item.keybindData);
                     PlayerPrefs.SetString(item2.name, item.keybindData); //Update keybind data in playerPrefs
                 }
             }
@@ -72,18 +72,23 @@ public class Settings : GameManager
         curKeyBind = curButton; //Set current button to update
         curKeyToBind = curButton.name.ToString(); //Get Key to re-register
     }
-    string mouseName(string inButton) //Update string of key based on mouse input
+    string keyName(string inButton) //Update string of key based on mouse input
     {
         string output = null;
-        switch (inButton)
+        if (int.TryParse(inButton, out int number)) //Detect if string is a mouse button (int)
         {
-            case "0":
-                output = "Left Mouse";
-                break;
-            case "1":
-                output = "Right Mouse";
-                break;
+            switch (inButton)
+            {
+                case "0":
+                    output = "Left Mouse";
+                    break;
+                case "1":
+                    output = "Right Mouse";
+                    break;
+            }
         }
+        else
+            output = inButton;
         return output;
     }
     private void OnGUI()
@@ -108,7 +113,7 @@ public class Settings : GameManager
             {
                 isReadingForKey = false; //Stop listening for key
                 Debug.Log("Detected mouse: " + e.button); //Debug check
-                curKeyBind.GetComponentInChildren<Text>().text = curKeyToBind + ": " + mouseName(e.button.ToString()); //Update button text
+                curKeyBind.GetComponentInChildren<Text>().text = curKeyToBind + ": " + keyName(e.button.ToString()); //Update button text
                 PlayerPrefs.SetString("" + curKeyToBind, e.button.ToString()); //Update player prefs
                 foreach (var item in keybindsMain) //Update keybinds Array for saving purposes
                 {
