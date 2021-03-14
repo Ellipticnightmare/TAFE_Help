@@ -8,17 +8,21 @@ public class UIManager : GameManager
 {
     [HideInInspector]
     public Image healthBar, manaBar, staminaBar; //Images that represent our stats
-    [HideInInspector]
     public GameObject pauseMenu; //Pause Menu parent object
     public static bool isPaused; //Determine if paused
-    private void Update()
+    private void Update()   
     {
-        healthBar.fillAmount = (float)base.playerHealth / 100; //Update healthbar Display
-        manaBar.fillAmount = (float)base.playerMana / 100; //Update manabar Display
-        staminaBar.fillAmount = (float)base.playerStamina / 100; //Update staminabar Display
+        healthBar.fillAmount = (float)PlayerController.playerHealth / PlayerController.playerMaxHealth; //Update healthbar Display
+        healthBar.GetComponentInChildren<Text>().text = PlayerController.playerHealth.ToString() + "/" + PlayerController.playerMaxHealth.ToString();
+        manaBar.fillAmount = (float)PlayerController.playerMana / PlayerController.playerMaxMana; //Update manabar Display
+        staminaBar.fillAmount = (float)PlayerController.playerStamina / PlayerController.playerMaxStamina; //Update staminabar Display
 
         if (Input.GetKeyDown(KeyCode.Escape))
             TogglePause(); //Pause and Unpause when you hit the Escape Key
+    }
+    public override void UpdatePlayerName()
+    {
+        base.UpdatePlayerName();
     }
     public void TogglePause()
     {

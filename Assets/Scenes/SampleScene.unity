@@ -165,9 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44934bb0c58c73749a613282cd8c2c9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHealth: 50
-  playerMana: 75
-  playerStamina: 80
+  playerNameReader: {fileID: 0}
   healthBar: {fileID: 1311430754}
   manaBar: {fileID: 560127021}
   staminaBar: {fileID: 536037143}
@@ -184,9 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6502edfcf238c4247bbba414087329c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHealth: 0
-  playerMana: 0
-  playerStamina: 0
+  playerNameReader: {fileID: 0}
   keybindUI: {fileID: 859717741}
   curKeyBind: {fileID: 0}
   keyBindButtons:
@@ -1644,7 +1640,8 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1917574892}
   m_Father: {fileID: 1365410229}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1915,9 +1912,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fca6e0afecabe94fb97db84c5dfeaad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHealth: 0
-  playerMana: 0
-  playerStamina: 0
+  playerNameReader: {fileID: 0}
   chara: {fileID: 0}
   horizontalDetect: 0
   verticalDetect: 0
@@ -1926,6 +1921,48 @@ MonoBehaviour:
   curMove: 0
   playerLevel: 0
   playerEXP: 0
+  playerGold: 0
+  levelData:
+  - maxHealth: 100
+    maxMana: 100
+    maxStamina: 75
+    expToNextLevel: 100
+  - maxHealth: 150
+    maxMana: 150
+    maxStamina: 100
+    expToNextLevel: 600
+  - maxHealth: 0
+    maxMana: 0
+    maxStamina: 0
+    expToNextLevel: 0
+  - maxHealth: 0
+    maxMana: 0
+    maxStamina: 0
+    expToNextLevel: 0
+  - maxHealth: 0
+    maxMana: 0
+    maxStamina: 0
+    expToNextLevel: 0
+  - maxHealth: 0
+    maxMana: 0
+    maxStamina: 0
+    expToNextLevel: 0
+  - maxHealth: 0
+    maxMana: 0
+    maxStamina: 0
+    expToNextLevel: 0
+  - maxHealth: 0
+    maxMana: 0
+    maxStamina: 0
+    expToNextLevel: 0
+  - maxHealth: 0
+    maxMana: 0
+    maxStamina: 0
+    expToNextLevel: 0
+  - maxHealth: 0
+    maxMana: 0
+    maxStamina: 0
+    expToNextLevel: 0
 --- !u!143 &1405150223
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2281,6 +2318,84 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1883661651}
+  m_CullTransparentMesh: 0
+--- !u!1 &1917574891
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1917574892}
+  - component: {fileID: 1917574894}
+  - component: {fileID: 1917574893}
+  m_Layer: 5
+  m_Name: Text
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1917574892
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1917574891}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1311430753}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -0.000023842, y: 0.000011265}
+  m_SizeDelta: {x: 130.87305, y: 27.027458}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1917574893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1917574891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_RaycastTarget: 1
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 14
+    m_FontStyle: 0
+    m_BestFit: 1
+    m_MinSize: 10
+    m_MaxSize: 40
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: New Text
+--- !u!222 &1917574894
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1917574891}
   m_CullTransparentMesh: 0
 --- !u!1 &2035075577
 GameObject:

@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -11,9 +13,20 @@ public class PlayerController : GameManager
     public float horizontalDetect, verticalDetect, speed;
     public Camera mainCam; //Our camera
     public movementState curMove = movementState.walk; //A state controller to determine movement speeds and other variables
-    public int playerLevel, playerEXP;
+    string playerName;
+    #region PlayerStats
+    public int playerLevel, playerEXP, playerGold;
+    public static float playerHealth, playerMana, playerStamina; //Display stats
+    public static int playerMaxHealth, playerMaxMana, playerMaxStamina; //Display stats
+    public playerLevelData[] levelData;
+    string filePath;
+    #endregion
     private void Start()
     {
+        Debug.Log(Application.persistentDataPath);
+        playerName = PlayerPrefs.GetString("curPlayerName");
+        filePath = Application.persistentDataPath + "/" + playerName;
+        LoadData();
         Cursor.visible = false; //Hides cursor
         Cursor.lockState = CursorLockMode.Locked; //Confined cursor to center of screen
         mainCam = Camera.main; //Locate Camera
@@ -27,6 +40,22 @@ public class PlayerController : GameManager
     {
         if (UIManager.isPaused == false) //Determine if game is paused
         {
+            if (playerStamina < playerMaxStamina)
+                playerStamina += Time.deltaTime * (.5f * playerLevel);
+            if (playerMana < playerMaxMana)
+                playerMana += Time.deltaTime * (.35f * playerLevel);
+            if (playerHealth < playerMaxHealth)
+                playerHealth += Time.deltaTime * (.15f * playerLevel);
+            if (Input.GetKeyDown(KeyCode.Tab))
+                playerEXP += 500;
+            playerMaxHealth = levelData[playerLevel - 1].maxHealth;
+            playerMaxMana = levelData[playerLevel - 1].maxMana;
+            playerMaxStamina = levelData[playerLevel - 1].maxStamina;
+            if (playerEXP >= levelData[playerLevel - 1].expToNextLevel)
+            {
+                playerEXP -= levelData[playerLevel - 1].expToNextLevel;
+                StartCoroutine(IncreaseLevel());
+            }
             //Register keybindings from playerPrefs
             KeyCode jump = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Jump"));
             KeyCode crouch = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Crouch"));
@@ -59,6 +88,68 @@ public class PlayerController : GameManager
             this.gameObject.transform.Rotate(new Vector3(0, Input.GetAxisRaw("Mouse X"), 0)); //Rotate left to right
             mainCam.transform.Rotate(new Vector3(-(Input.GetAxisRaw("Mouse Y")), 0, 0)); //Look up and down
         }
+    }
+    public void LoadData()
+    {
+        Debug.Log(playerName);
+        string[] rawData;
+        if (File.Exists(filePath + ".playerData"))
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream file = File.Open(filePath + ".playerData", FileMode.Open);
+            playerReadData check = (playerReadData)bf.Deserialize(file);
+            file.Close();
+            rawData = check.data.Split('|');
+            #region readData
+            playerLevel = int.Parse(rawData[0]);
+            playerEXP = int.Parse(rawData[1]);
+            playerGold = int.Parse(rawData[2]);
+            playerHealth = float.Parse(rawData[3]);
+            playerMana = float.Parse(rawData[4]);
+            playerStamina = float.Parse(rawData[5]);
+            #endregion
+        }
+        else
+        {
+            playerLevel = 1;
+            playerEXP = 0;
+            playerGold = 10;
+            playerHealth = 100;
+            playerMana = 100;
+            playerStamina = 50;
+            SaveData();
+        }
+    }
+    public void SaveData()
+    {
+        string dataSave = "";
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = File.Create(filePath + ".playerData");
+        #region saveData
+        dataSave += playerLevel + "|";
+        dataSave += playerEXP + "|";
+        dataSave += playerGold + "|";
+        dataSave += playerHealth + "|";
+        dataSave += playerMana + "|";
+        dataSave += playerStamina + "|";
+        #endregion
+        playerReadData check = new playerReadData();
+        check.data = dataSave;
+        bf.Serialize(file, check);
+        file.Close();
+    }
+    IEnumerator IncreaseLevel()
+    {
+        playerLevel++;
+        Debug.Log("Leveled up!");
+        float healthRatio = playerHealth / playerMaxHealth;
+        float manaRatio = playerMana / playerMaxMana;
+        float staminaRatio = playerStamina / playerMaxStamina;
+        yield return new WaitForSeconds(.01f);
+        playerHealth = playerMaxHealth * healthRatio;
+        playerMana = playerMaxMana * manaRatio;
+        playerStamina = playerMaxStamina * staminaRatio;
+        SaveData();
     }
     public enum movementState //Categorize the different movement options
     {

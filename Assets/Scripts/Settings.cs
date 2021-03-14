@@ -87,6 +87,10 @@ public class Settings : GameManager
                     break;
             }
         }
+        else if (inButton == "LeftShift")
+            output = "Left Shift";
+        else if (inButton == "RightShift")
+            output = "Right Shift";
         else
             output = inButton;
         return output;
@@ -122,16 +126,30 @@ public class Settings : GameManager
                 }
                 SaveData(); //Save new keybindings to external file
             }
+            else if(Input.GetKey(KeyCode.LeftShift))
+            {
+                isReadingForKey = false;
+                curKeyBind.GetComponentInChildren<Text>().text = curKeyToBind + ": Left Shift";
+                PlayerPrefs.SetString("" + curKeyToBind, "LeftShift");
+                foreach (var item in keybindsMain)
+                {
+                    if (item.keyBindName == curKeyToBind)
+                        item.keybindData = "LeftShift";
+                }
+                SaveData();
+            }
+            else if(Input.GetKey(KeyCode.RightShift))
+            {
+                isReadingForKey = false;
+                curKeyBind.GetComponentInChildren<Text>().text = curKeyToBind + ": Right Shift";
+                PlayerPrefs.SetString("" + curKeyToBind, "RightShift");
+                foreach (var item in keybindsMain)
+                {
+                    if (item.keyBindName == curKeyToBind)
+                        item.keybindData = "RightShift";
+                }
+                SaveData();
+            }
         }
     }
-}
-[System.Serializable]
-public class KeybindData
-{
-    public string keyBindName, keybindData;
-}
-[System.Serializable]
-public class dataString
-{
-    public KeybindData[] keybinds;
 }
