@@ -14,6 +14,15 @@ public class GameManager : MonoBehaviour
     {
         Application.Quit();
     }
+    public void LoadNewScene(string inSceneName)
+    {
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "MainMenu")
+        {
+            PlayerController quickCheck = FindObjectOfType<PlayerController>();
+            quickCheck.SaveData();
+        }
+        UnityEngine.SceneManagement.SceneManager.LoadScene(inSceneName);
+    }
     public void PauseGame()
     {
         Debug.Log("Paused Game");
@@ -46,4 +55,9 @@ public class playerLevelData
 public class playerReadData
 {
     public string data;
+}
+[System.Serializable]
+public class playerSettingsData
+{
+    public float volume, mouseSensitivityX, mouseSensitivityY;
 }

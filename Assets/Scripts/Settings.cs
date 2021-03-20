@@ -4,42 +4,100 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Audio;
 
 public class Settings : GameManager
 {
-    public GameObject keybindUI; //Save the UI in settings
+    [HideInInspector]
+    public GameObject keybindUI; //Save the Keybind UI in settings
+    [HideInInspector]
+    public GameObject settingsUI; //Save the Settings UI in settings
+    [HideInInspector]
     public Button curKeyBind; //Adjust the current button
+    [HideInInspector]
     public Button[] keyBindButtons; //Hold the buttons that are updated at the start
     bool isReadingForKey; //Begin listening for key data
     string curKeyToBind; //Set key to bind
+    [HideInInspector]
     public List<KeybindData> keybindsMain = new List<KeybindData>(); //Hold current keybinds
+    [HideInInspector]
+    public Text settingsButtonText;
+    #region Settings Objects
+    [HideInInspector]
+    public AudioMixer audioMixer;
+    [HideInInspector]
+    public Dropdown qualDropdown, resolutionDropdown;
+    [HideInInspector]
+    public Toggle fullScreenToggle;
+    #region values
+    Resolution[] availableResolutions;
+    public static float volumeControl;
+    public static float mouseSensX, mouseSensY;
+    #endregion
+    #endregion
     private void Start()
     {
+        int resolutionIndex = 0;
         LoadData(); //Check if I have a save file
-    }
-    private void UpdateKeyBindUI()
-    {
-        foreach (var item in keybindsMain) //Iterate through keybinding list
+        qualDropdown.value = QualitySettings.GetQualityLevel();
+        fullScreenToggle.isOn = Screen.fullScreen;
+        availableResolutions = Screen.resolutions;
+        resolutionDropdown.ClearOptions();
+        List<string> availableResoultionsList = new List<string>();
+        for(int i = 0; i < availableResolutions.Length; i++)
         {
-            foreach (var item2 in keyBindButtons) //Iterate through buttons list
-            {
-                if (item.keyBindName == item2.name) //If button matches keybinding entry, update text
-                {
-                    item2.GetComponentInChildren<Text>().text = item2.name + ": " + keyName(item.keybindData);
-                    PlayerPrefs.SetString(item2.name, item.keybindData); //Update keybind data in playerPrefs
-                }
-            }
+            string optionVal = availableResolutions[i].width + " x " + availableResolutions[i].height;
+            if (!availableResoultionsList.Contains(optionVal))
+                availableResoultionsList.Add(optionVal);
+            if (availableResolutions[i].width == Screen.currentResolution.width && availableResolutions[i].height == Screen.currentResolution.height)
+                resolutionIndex = i;
         }
+        resolutionDropdown.AddOptions(availableResoultionsList);
+        resolutionDropdown.value = resolutionIndex;
+        resolutionDropdown.RefreshShownValue();
     }
-    public void toggleKeyBinds() //Hide and show keybinding UI
+    private void Update()
     {
-        keybindUI.SetActive(!keybindUI.activeInHierarchy);
+        settingsUI.SetActive(!keybindUI.activeInHierarchy);
+        if (keybindUI.activeInHierarchy)
+            settingsButtonText.text = "Main Menu";
+        else
+            settingsButtonText.text = "Controls";
     }
     public override void GameQuit()
     {
         SaveData(); //Save current game data
         base.GameQuit(); //Quit application
     }
+    #region Settings Controllers
+    public void SetVolume(float volume)
+    {
+        audioMixer.SetFloat("volume", volume);
+        volumeControl = volume;
+    }
+    public void SetMouseX(float value)
+    {
+        mouseSensX = (value/100f);
+    }
+    public void SetMouseY(float value)
+    {
+        mouseSensY = (value/100f);
+    }
+    public void SetQuality(int value)
+    {
+        QualitySettings.SetQualityLevel(value);
+    }
+    public void FullscreenToggle(bool value)
+    {
+        Screen.fullScreen = value;
+    }
+    public void SetResolution(int value)
+    {
+        Resolution resoultionVar = availableResolutions[value];
+        Screen.SetResolution(resoultionVar.width, resoultionVar.height, Screen.fullScreen);
+    }
+    #endregion
+    #region dataManagement
     public void SaveData()
     {
         BinaryFormatter bf = new BinaryFormatter(); //Open new BinaryFormatter
@@ -66,6 +124,8 @@ public class Settings : GameManager
             Debug.Log("No File Found");
         UpdateKeyBindUI(); //Update Keybinding UI
     }
+    #endregion
+    #region KeyBinding
     public void StartReadKey(Button curButton)
     {
         isReadingForKey = true; //Start waiting for key input
@@ -95,6 +155,25 @@ public class Settings : GameManager
             output = inButton;
         return output;
     }
+    public void toggleKeyBinds() //Hide and show keybinding UI
+    {
+        keybindUI.SetActive(!keybindUI.activeInHierarchy);
+    }
+    private void UpdateKeyBindUI()
+    {
+        foreach (var item in keybindsMain) //Iterate through keybinding list
+        {
+            foreach (var item2 in keyBindButtons) //Iterate through buttons list
+            {
+                if (item.keyBindName == item2.name) //If button matches keybinding entry, update text
+                {
+                    item2.GetComponentInChildren<Text>().text = item2.name + ": " + keyName(item.keybindData);
+                    PlayerPrefs.SetString(item2.name, item.keybindData); //Update keybind data in playerPrefs
+                }
+            }
+        }
+    }
+    #endregion
     private void OnGUI()
     {
         Event e = Event.current; //Create new Event

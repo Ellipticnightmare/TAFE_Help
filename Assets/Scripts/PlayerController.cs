@@ -81,9 +81,10 @@ public class PlayerController : GameManager
                     speed = 2.25f;
                     break;
             }
-            horizontalDetect = Input.GetAxisRaw("Horizontal"); //Take in A + D input
-            verticalDetect = Input.GetAxisRaw("Vertical"); //Take in S + W input
-            chara.Move(new Vector3(horizontalDetect, -9.81f, verticalDetect) * speed * Time.deltaTime); //Move character controller
+            horizontalDetect = Input.GetAxis("Horizontal"); //Take in A + D input
+            verticalDetect = Input.GetAxis("Vertical"); //Take in S + W input
+            Vector3 move = this.transform.TransformDirection(horizontalDetect, 0, verticalDetect);
+            chara.Move(move * Time.deltaTime * speed); //Move character controller
 
             this.gameObject.transform.Rotate(new Vector3(0, Input.GetAxisRaw("Mouse X"), 0)); //Rotate left to right
             mainCam.transform.Rotate(new Vector3(-(Input.GetAxisRaw("Mouse Y")), 0, 0)); //Look up and down
@@ -108,6 +109,12 @@ public class PlayerController : GameManager
             playerMana = float.Parse(rawData[4]);
             playerStamina = float.Parse(rawData[5]);
             #endregion
+            #region readSettings
+            FileStream settingsFile = File.Open(filePath + ".playerSettings", FileMode.Open);
+            playerSettingsData setCheck = (playerSettingsData)bf.Deserialize(settingsFile);
+            settingsFile.Close();
+            Settings.volumeControl = setCheck.volume;
+            #endregion
         }
         else
         {
@@ -117,6 +124,9 @@ public class PlayerController : GameManager
             playerHealth = 100;
             playerMana = 100;
             playerStamina = 50;
+            Settings.volumeControl = -40;
+            Settings.mouseSensY = 5;
+            Settings.mouseSensX = 5;
             SaveData();
         }
     }
@@ -133,10 +143,21 @@ public class PlayerController : GameManager
         dataSave += playerMana + "|";
         dataSave += playerStamina + "|";
         #endregion
+        #region dataSave
         playerReadData check = new playerReadData();
         check.data = dataSave;
         bf.Serialize(file, check);
         file.Close();
+        #endregion
+        #region settingsSave
+        FileStream setFile = File.Create(filePath + ".playerSettings");
+        playerSettingsData setCheck = new playerSettingsData();
+        setCheck.mouseSensitivityX = Settings.mouseSensX;
+        setCheck.mouseSensitivityY = Settings.mouseSensY;
+        setCheck.volume = Settings.volumeControl;
+        bf.Serialize(setFile, setCheck);
+        setFile.Close();
+        #endregion
     }
     IEnumerator IncreaseLevel()
     {

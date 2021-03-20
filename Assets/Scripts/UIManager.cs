@@ -36,6 +36,6 @@ public class UIManager : GameManager
     }
     public void PlayGame(string inString)
     {
-        SceneManager.LoadScene(inString); //Load scene from defined string
+        base.LoadNewScene(inString);
     }
 }
