@@ -165,7 +165,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44934bb0c58c73749a613282cd8c2c9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerNameReader: {fileID: 0}
   healthBar: {fileID: 1311430754}
   manaBar: {fileID: 560127021}
   staminaBar: {fileID: 536037143}
@@ -182,7 +181,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6502edfcf238c4247bbba414087329c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerNameReader: {fileID: 0}
   keybindUI: {fileID: 859717741}
   settingsUI: {fileID: 1125850529}
   curKeyBind: {fileID: 0}
@@ -3574,7 +3572,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fca6e0afecabe94fb97db84c5dfeaad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerNameReader: {fileID: 0}
   chara: {fileID: 0}
   horizontalDetect: 0
   verticalDetect: 0
@@ -3588,43 +3585,56 @@ MonoBehaviour:
   - maxHealth: 100
     maxMana: 100
     maxStamina: 75
+    speed: 2
     expToNextLevel: 100
   - maxHealth: 150
     maxMana: 150
     maxStamina: 100
+    speed: 3
     expToNextLevel: 600
   - maxHealth: 0
     maxMana: 0
     maxStamina: 0
+    speed: 0
     expToNextLevel: 0
   - maxHealth: 0
     maxMana: 0
     maxStamina: 0
+    speed: 0
     expToNextLevel: 0
   - maxHealth: 0
     maxMana: 0
     maxStamina: 0
+    speed: 0
     expToNextLevel: 0
   - maxHealth: 0
     maxMana: 0
     maxStamina: 0
+    speed: 0
     expToNextLevel: 0
   - maxHealth: 0
     maxMana: 0
     maxStamina: 0
+    speed: 0
     expToNextLevel: 0
   - maxHealth: 0
     maxMana: 0
     maxStamina: 0
+    speed: 0
     expToNextLevel: 0
   - maxHealth: 0
     maxMana: 0
     maxStamina: 0
+    speed: 0
     expToNextLevel: 0
   - maxHealth: 0
     maxMana: 0
     maxStamina: 0
+    speed: 0
     expToNextLevel: 0
+  activePotion: {fileID: 11400000, guid: 204c2c3fdd21b2f41987aa0d42d7791d, type: 2}
+  effectPotion: {fileID: 0}
+  potionsInInventory: []
 --- !u!143 &1405150223
 CharacterController:
   m_ObjectHideFlags: 0

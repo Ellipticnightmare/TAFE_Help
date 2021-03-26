@@ -101,7 +101,7 @@ public class Settings : GameManager
     public void SaveData()
     {
         BinaryFormatter bf = new BinaryFormatter(); //Open new BinaryFormatter
-        FileStream file = File.Create(Application.persistentDataPath + "keybinds.data"); //Create file
+        FileStream file = File.Create(Application.persistentDataPath + "/" + PlayerPrefs.GetString("curPlayerName") + "/" + "keybinds.data"); //Create file
 
         dataString check = new dataString(); //Add reference to data
         check.keybinds = keybindsMain.ToArray(); //Build reference so data is populated
@@ -111,10 +111,10 @@ public class Settings : GameManager
     }
     public void LoadData()
     {
-        if (File.Exists(Application.persistentDataPath + "keybinds.data")) //Check if file exists
+        if (File.Exists(Application.persistentDataPath + "/" + PlayerPrefs.GetString("curPlayerName") + "/" + "keybinds.data")) //Check if file exists
         {
             BinaryFormatter bf = new BinaryFormatter(); //Open new BinaryFormatter
-            FileStream file = File.Open(Application.persistentDataPath + "keybinds.data", FileMode.Open); //Open data file
+            FileStream file = File.Open(Application.persistentDataPath + "/" + PlayerPrefs.GetString("curPlayerName") + "/" + "keybinds.data", FileMode.Open); //Open data file
             dataString check = (dataString)bf.Deserialize(file); //Read data by deserializing file
             file.Close(); //Close file
             keybindsMain.Clear(); //Clear keybinds

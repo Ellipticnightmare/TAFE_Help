@@ -5,11 +5,6 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public InputField playerNameReader;
-    public virtual void UpdatePlayerName()
-    {
-        PlayerPrefs.SetString("curPlayerName", playerNameReader.text);
-    }
     public virtual void GameQuit() //Quits the game
     {
         Application.Quit();
@@ -49,7 +44,7 @@ public class dataString
 [System.Serializable]
 public class playerLevelData
 {
-    public int maxHealth, maxMana, maxStamina, expToNextLevel;
+    public int maxHealth, maxMana, maxStamina, speed, expToNextLevel;
 }
 [System.Serializable]
 public class playerReadData
@@ -60,4 +55,9 @@ public class playerReadData
 public class playerSettingsData
 {
     public float volume, mouseSensitivityX, mouseSensitivityY;
+}
+[System.Serializable]
+public class playerDatabase
+{
+    public List<string> playerNamesDatabase = new List<string>();
 }

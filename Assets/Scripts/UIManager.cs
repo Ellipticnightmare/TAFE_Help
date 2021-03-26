@@ -12,17 +12,16 @@ public class UIManager : GameManager
     public static bool isPaused; //Determine if paused
     private void Update()   
     {
-        healthBar.fillAmount = (float)PlayerController.playerHealth / PlayerController.playerMaxHealth; //Update healthbar Display
-        healthBar.GetComponentInChildren<Text>().text = PlayerController.playerHealth.ToString() + "/" + PlayerController.playerMaxHealth.ToString();
-        manaBar.fillAmount = (float)PlayerController.playerMana / PlayerController.playerMaxMana; //Update manabar Display
-        staminaBar.fillAmount = (float)PlayerController.playerStamina / PlayerController.playerMaxStamina; //Update staminabar Display
+        if (healthBar != null)
+        {
+            healthBar.fillAmount = (float)PlayerController.playerHealth / PlayerController.playerMaxHealth; //Update healthbar Display
+            healthBar.GetComponentInChildren<Text>().text = PlayerController.playerHealth.ToString() + "/" + PlayerController.playerMaxHealth.ToString();
+            manaBar.fillAmount = (float)PlayerController.playerMana / PlayerController.playerMaxMana; //Update manabar Display
+            staminaBar.fillAmount = (float)PlayerController.playerStamina / PlayerController.playerMaxStamina; //Update staminabar Display
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-            TogglePause(); //Pause and Unpause when you hit the Escape Key
-    }
-    public override void UpdatePlayerName()
-    {
-        base.UpdatePlayerName();
+            if (Input.GetKeyDown(KeyCode.Escape))
+                TogglePause(); //Pause and Unpause when you hit the Escape Key
+        }
     }
     public void TogglePause()
     {

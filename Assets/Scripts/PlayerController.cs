@@ -16,16 +16,21 @@ public class PlayerController : GameManager
     string playerName;
     #region PlayerStats
     public int playerLevel, playerEXP, playerGold;
-    public static float playerHealth, playerMana, playerStamina; //Display stats
+    public static float playerHealth, playerMana, playerStamina, playerSpeed; //Display stats
     public static int playerMaxHealth, playerMaxMana, playerMaxStamina; //Display stats
     public playerLevelData[] levelData;
     string filePath;
     #endregion
+    public Potion activePotion;
+    Potion effectPotion;
+    public Potion[] potionsInInventory;
+    bool hasEffectActive;
+    float potionEffectTimer;
     private void Start()
     {
         Debug.Log(Application.persistentDataPath);
         playerName = PlayerPrefs.GetString("curPlayerName");
-        filePath = Application.persistentDataPath + "/" + playerName;
+        filePath = Application.persistentDataPath + "/" + playerName + "/" + playerName;
         LoadData();
         Cursor.visible = false; //Hides cursor
         Cursor.lockState = CursorLockMode.Locked; //Confined cursor to center of screen
@@ -40,6 +45,44 @@ public class PlayerController : GameManager
     {
         if (UIManager.isPaused == false) //Determine if game is paused
         {
+            #region Status Effects
+            if (hasEffectActive)
+            {
+                if (potionEffectTimer > 0)
+                    potionEffectTimer -= Time.deltaTime;
+                else
+                {
+                    hasEffectActive = false;
+                }
+                foreach (var item in effectPotion.EffectGain)
+                {
+                    switch (item)
+                    {
+                        case Potion.effect.recovery:
+                            playerHealth += effectPotion.healVal * Time.deltaTime;
+                            break;
+                        case Potion.effect.recharge:
+                            playerMana += effectPotion.healVal * Time.deltaTime;
+                            break;
+                        case Potion.effect.catchyourbreath:
+                            playerStamina += effectPotion.healVal * Time.deltaTime;
+                            break;
+                        case Potion.effect.blank:
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                int tempVal = 0;
+                tempVal = Mathf.RoundToInt(playerStamina);
+                playerStamina = tempVal;
+                tempVal = Mathf.RoundToInt(playerMana);
+                playerMana = tempVal;
+                tempVal = Mathf.RoundToInt(playerHealth);
+                playerHealth = tempVal;
+            }
+            #endregion
             if (playerStamina < playerMaxStamina)
                 playerStamina += Time.deltaTime * (.5f * playerLevel);
             if (playerMana < playerMaxMana)
@@ -48,6 +91,7 @@ public class PlayerController : GameManager
                 playerHealth += Time.deltaTime * (.15f * playerLevel);
             if (Input.GetKeyDown(KeyCode.Tab))
                 playerEXP += 500;
+            Debug.Log(playerMana);
             playerMaxHealth = levelData[playerLevel - 1].maxHealth;
             playerMaxMana = levelData[playerLevel - 1].maxMana;
             playerMaxStamina = levelData[playerLevel - 1].maxStamina;
@@ -61,6 +105,7 @@ public class PlayerController : GameManager
             KeyCode crouch = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Crouch"));
             KeyCode run = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Run"));
             KeyCode shoot = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Shoot"));
+            //KeyCode potion = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Potion"));
             if (Input.GetKey(run)) //run
                 curMove = movementState.run;
             else if (Input.GetKey(crouch)) //crouch
@@ -69,16 +114,20 @@ public class PlayerController : GameManager
                 curMove = movementState.walk;
             if (Input.GetKeyDown(jump)) //Test Jump
                 Debug.Log("Ki");
+            if (Input.GetKeyDown(shoot))
+            {
+                UsePotion();
+            }
             switch (curMove) //Adjust stats based off of current movement type
             {
                 case movementState.walk:
-                    speed = 1.1f;
+                    speed = playerSpeed * 1;
                     break;
                 case movementState.crouch:
-                    speed = .85f;
+                    speed = playerSpeed * .85f;
                     break;
                 case movementState.run:
-                    speed = 2.25f;
+                    speed = playerSpeed * 2.25f;
                     break;
             }
             horizontalDetect = Input.GetAxis("Horizontal"); //Take in A + D input
@@ -108,6 +157,7 @@ public class PlayerController : GameManager
             playerHealth = float.Parse(rawData[3]);
             playerMana = float.Parse(rawData[4]);
             playerStamina = float.Parse(rawData[5]);
+            playerSpeed = levelData[playerLevel].speed;
             #endregion
             #region readSettings
             FileStream settingsFile = File.Open(filePath + ".playerSettings", FileMode.Open);
@@ -118,6 +168,9 @@ public class PlayerController : GameManager
         }
         else
         {
+            #region Directory Management
+            Directory.CreateDirectory(Application.persistentDataPath + "/" + playerName);
+            #endregion
             playerLevel = 1;
             playerEXP = 0;
             playerGold = 10;
@@ -159,6 +212,67 @@ public class PlayerController : GameManager
         setFile.Close();
         #endregion
     }
+    public void UsePotion()
+    {
+        if (activePotion != null)
+        {
+            foreach (var item in activePotion.StatToRecover)
+            {
+                switch (item)
+                {
+                    case Potion.stat.blank:
+                        break;
+                    case Potion.stat.health:
+                        playerHealth += activePotion.healVal;
+                        break;
+                    case Potion.stat.mana:
+                        playerMana += activePotion.healVal;
+                        break;
+                    case Potion.stat.stamina:
+                        playerStamina += activePotion.healVal;
+                        break;
+                    case Potion.stat.speed:
+                        if (activePotion.healVal > 9)
+                        {
+                            int speedUp = Mathf.RoundToInt(activePotion.healVal / 100) + 1;
+                            playerSpeed += speedUp;
+                        }
+                        else
+                            playerSpeed += activePotion.healVal;
+                        break;
+                }
+            }
+            foreach (var item in activePotion.StatToDamage)
+            {
+                switch (item)
+                {
+                    case Potion.stat.blank:
+                        break;
+                    case Potion.stat.health:
+                        playerHealth -= activePotion.healVal;
+                        break;
+                    case Potion.stat.mana:
+                        playerMana -= activePotion.healVal;
+                        Debug.Log("Damaging Mana");
+                        break;
+                    case Potion.stat.stamina:
+                        playerStamina -= activePotion.healVal;
+                        break;
+                    case Potion.stat.speed:
+                        playerSpeed -= activePotion.healVal;
+                        break;
+                }
+            }
+            if (activePotion.effectTimer > 0)
+            {
+                hasEffectActive = true;
+                potionEffectTimer = activePotion.effectTimer;
+            }
+            effectPotion = activePotion;
+            //Remove from inventory
+            activePotion = null;
+        }
+    }
     IEnumerator IncreaseLevel()
     {
         playerLevel++;
@@ -172,6 +286,7 @@ public class PlayerController : GameManager
         playerStamina = playerMaxStamina * staminaRatio;
         SaveData();
     }
+
     public enum movementState //Categorize the different movement options
     {
         walk,
